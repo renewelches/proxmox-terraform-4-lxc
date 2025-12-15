@@ -1,11 +1,11 @@
 # Copy this file to terraform.tfvars and fill in your actual values
 # DO NOT commit terraform.tfvars to version control
+# Set the Proxmox API Token vie environment variabl or using tools like Vault
 
 proxmox_api_url      = "https://proxmox.lab.home/api2/json"
-proxmox_user         = "tf@pve"
-# proxmox_password   set via environment variable
 proxmox_tls_insecure = false  # Set to false if using valid SSL certificate
 proxmox_node         = "pve"
+ollama_host          = "http://ollama.lab.home:11434"
 static_ips = {
   web_server = "192.168.1.100"
   db_server  = "192.168.1.200"

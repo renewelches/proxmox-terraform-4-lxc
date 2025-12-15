@@ -31,3 +31,8 @@ variable "static_ips" {
   description = "Map of static IP addresses for resources"
   type        = map(string)
 }
+
+variable "ollama_host" {
+  description = "The remote URL of ollama. Ollama must run with 'Expose Ollam to the network' setting."
+  type        = string
+}
