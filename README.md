@@ -4,18 +4,25 @@ This repository contains Terraform configuration for deploying containerized app
 
 ## What This Deploys
 
-This configuration creates two Docker-enabled LXC containers:
+This configuration creates three Docker-enabled LXC containers:
 
 1. **Open WebUI** (`open-webui-container`) - Web interface for Ollama AI models
-   - 1 CPU core, 1GB RAM, 10GB storage
+   - 2 CPU cores, 1.5GB RAM, 20GB storage
    - Runs on static IP with gateway routing
    - Automatically deploys Open WebUI Docker container
    - Uses Ollama from a remote machine
+   - Integrates with SearXNG for web search capabilities
 
-2. **n8n** (`n8n-container`) - Workflow automation platform
+2. **SearXNG** (`searxng-container`) - Privacy-respecting metasearch engine
+   - 1 CPU core, 1GB RAM, 50GB storage
+   - Runs on static IP with gateway routing
+   - Automatically deploys SearXNG Docker container
+   - Pre-configured with custom settings for integration with Open WebUI
+
+3. **n8n** (`n8n-container`) - Workflow automation platform
    - 2 CPU cores, 6GB RAM, 50GB storage
    - Runs on static IP with gateway routing
-   - Automatically deploys n8n Docker container with persistence and SQLLite
+   - Automatically deploys n8n Docker container with persistence and SQLite
 
 ## Prerequisites
 
@@ -68,15 +75,17 @@ ls -la /var/lib/vz/template/cache/debian13-docker-template.tar.gz
 Create a `terraform.tfvars` file with your configuration:
 
 ```hcl
-proxmox_api_url        = "https://your-proxmox-server:8006/api2/json"
-proxmox_api_token      = "terraform@pve!terraform-token=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-proxmox_tls_insecure   = true  # Set to false if using valid SSL certificate
-proxmox_node           = "pve"  # Your Proxmox node name
+proxmox_api_url          = "https://your-proxmox-server:8006/api2/json"
+proxmox_api_token        = "terraform@pve!terraform-token=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+proxmox_tls_insecure     = true  # Set to false if using valid SSL certificate
+proxmox_node             = "pve"  # Your Proxmox node name
 proxmox_host_default_pwd = "your-secure-root-password"
+ollama_host              = "http://ollama.example.com:11434"
 
 static_ips = {
-  open_webui = "192.168.1.100"  # Adjust to your network
-  n8n        = "192.168.1.101"
+  n8n        = "192.168.1.20"   # Adjust to your network
+  searxng    = "192.168.1.30"
+  open_webui = "192.168.1.40"
 }
 ```
 
@@ -137,23 +146,34 @@ The containers will be created and the Docker containers will be automatically d
 
 ```bash
 .
-├── README.md                    # This file
-├── versions.tf                  # Provider version constraints (using bpg/proxmox provider)
-├── variables.tf                 # Variable definitions
-├── main.tf                      # Main configuration (2 LXC containers with Docker)
-└── terraform.tfvars             # Your configuration (git-ignored)
+├── README.md                        # This file
+├── versions.tf                      # Provider version constraints (using bpg/proxmox provider)
+├── variables.tf                     # Variable definitions
+├── main.tf                          # Main configuration (3 LXC containers with Docker)
+├── terraform.tfvars                 # Your configuration (git-ignored)
+├── terraform.tfvars.example         # Example configuration template
+├── openwebui/
+│   └── docker.env.tpl               # Environment template for Open WebUI (SearXNG integration)
+└── searxng/
+    └── settings.yml                 # SearXNG configuration file
 ```
 
 ## Resources Deployed
 
-The [main.tf](main.tf) file contains two LXC container resources:
+The [main.tf](main.tf) file contains three LXC container resources:
 
 1. **open-webui-container** - Deploys [Open WebUI](https://github.com/open-webui/open-webui) connected to Ollama
-   - Accessible at `http://<static_ip>:80`
-   - Connected to Ollama at `http://<your ollam URL>:11434`
+   - Accessible at `http://<static_ips.open_webui>:80`
+   - Connected to Ollama at the configured `ollama_host` URL
+   - Web search enabled via SearXNG integration
 
-2. **n8n-container** - Deploys [n8n](https://n8n.io) workflow automation
-   - Accessible at `http://<static_ip>:5678`
+2. **searxng-container** - Deploys [SearXNG](https://github.com/searxng/searxng) metasearch engine
+   - Accessible at `http://<static_ips.searxng>:80`
+   - Provides privacy-respecting web search for Open WebUI
+   - Pre-configured with optimized settings in `searxng/settings.yml`
+
+3. **n8n-container** - Deploys [n8n](https://n8n.io) workflow automation
+   - Accessible at `http://<static_ips.n8n>:5678`
    - Configured for America/New_York timezone
    - Persistent data storage with Docker volumes
 
@@ -206,4 +226,5 @@ ls -la /var/lib/vz/template/cache/debian13-docker-template.tar.gz
 - [Terraform Documentation](https://www.terraform.io/docs)
 - [Proxmox VE Documentation](https://pve.proxmox.com/pve-docs/)
 - [Open WebUI Documentation](https://docs.openwebui.com/)
+- [SearXNG Documentation](https://docs.searxng.org/)
 - [n8n Documentation](https://docs.n8n.io/)
