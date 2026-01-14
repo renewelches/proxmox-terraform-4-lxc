@@ -26,3 +26,6 @@ terraform.rc
 # Ignore lock files (optional - some teams commit this)
 # .terraform.lock.hcl
 terraform.log
+
+.DS_Store
+openwebui/docker.env.rendered

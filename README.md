@@ -95,7 +95,7 @@ ssh-add ~/.ssh/id_rsa
 ### 5. Set up Environment Variables
 User Environment variables for 
 ```bash
-TF_VAR_proxmox_api_token
+echo
 TF_VAR_proxmox_host_default_pwd
 ```
 One way to set these variables on a Mac is by following [Securing Proxmox API Tokens with Apple Keychain](https://blog.renewelches.com/2025/12/09/proxmox-terraform-keychain/).
