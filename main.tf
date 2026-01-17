@@ -148,7 +148,8 @@ resource "proxmox_virtual_environment_container" "searxng-container" {
       "apt-get upgrade -y",
       "mkdir ./config",
       "mv /tmp/settings.yml ./config/",
-      "docker run -d --restart unless-stopped -p 80:8080  -v ./config/:/etc/searxng/ -v ./data/:/var/cache/searxng/ searxng/searxng:latest"
+      # "docker run -d --dns=9.9.9.9 --restart unless-stopped -p 80:8080  -v ./config/:/etc/searxng/ -v ./data/:/var/cache/searxng/ searxng/searxng:latest"
+      "docker run -d --dns=9.9.9.9 --restart unless-stopped -p 80:8080  -v ./config/:/etc/searxng/ -v ./data/:/var/cache/searxng/ searxng/searxng:2026.1.11-cf74e1d9e"
     ]
     connection {
       type  = "ssh"
