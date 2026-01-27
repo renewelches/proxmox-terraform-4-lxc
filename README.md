@@ -16,7 +16,7 @@ This configuration creates three Docker-enabled LXC containers:
 2. **SearXNG** (`searxng-container`) - Privacy-respecting metasearch engine
    - 1 CPU core, 1GB RAM, 50GB storage
    - Runs on static IP with gateway routing
-   - Automatically deploys SearXNG Docker container
+   - Automatically deploys SearXNG Docker container (uses pinned version to avoid timeout issues)
    - Pre-configured with custom settings for integration with Open WebUI
 
 3. **n8n** (`n8n-container`) - Workflow automation platform
@@ -146,6 +146,7 @@ The containers will be created and the Docker containers will be automatically d
 
 ```bash
 .
+├── .gitignore                       # Git ignore rules (excludes tfvars, state files, etc.)
 ├── README.md                        # This file
 ├── versions.tf                      # Provider version constraints (using bpg/proxmox provider)
 ├── variables.tf                     # Variable definitions
@@ -219,6 +220,7 @@ ls -la /var/lib/vz/template/cache/debian13-docker-template.tar.gz
 
 - Container provisioning requires working ssh-agent with loaded keys
 - Static IPs must be in the same subnet as the gateway
+- SearXNG uses a pinned version (`2026.1.16-2d9f213ca`) instead of `latest` to avoid timeout issues
 
 ## Additional Resources
 
