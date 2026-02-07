@@ -15,9 +15,9 @@ variable "proxmox_tls_insecure" {
   default     = false
 }
 
-variable "proxmox_node" {
-  description = "Target Proxmox node name"
-  type        = string
+variable "proxmox_nodes" {
+  description = "Target Proxmox node names"
+  type        = map(string)
 }
 
 
@@ -32,6 +32,11 @@ variable "static_ips" {
   type        = map(string)
 }
 
+variable "file-system" {
+  description = "The default file system to be used for the container or VM"
+  type        = string
+  default     = "local-zfs"
+}
 variable "ollama_host" {
   description = "The remote URL of ollama. Ollama must run with 'Expose Ollam to the network' setting."
   type        = string

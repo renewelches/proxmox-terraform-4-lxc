@@ -5,7 +5,11 @@
 proxmox_api_url          = "https://proxmox.lab.home/api2/json"
 proxmox_api_token        = "terraform@pve!provider=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 proxmox_tls_insecure     = false  # Set to true for self-signed certificates
-proxmox_node             = "pve"
+proxmox_nodes = {
+  n1 = "pve1",
+  n2 = "someothernode",
+  n3 = "myraspberrypi",
+}
 proxmox_host_default_pwd = "changeme"
 ollama_host              = "http://ollama.lab.home:11434"
 static_ips = {

@@ -14,7 +14,7 @@ resource "local_file" "openwebui_env" {
 }
 
 resource "proxmox_virtual_environment_container" "open-webui-container" {
-  node_name = var.proxmox_node
+  node_name = var.proxmox_nodes.n1
 
   unprivileged = true
   features {
@@ -42,13 +42,13 @@ resource "proxmox_virtual_environment_container" "open-webui-container" {
   }
 
   operating_system {
-    template_file_id = "local:vztmpl/debian13-docker-template.tar.gz"
+    template_file_id = "pve-cluster:vztmpl/debian13-docker-template.tar.gz"
     type             = "debian"
   }
 
   disk {
-    datastore_id = "local-lvm"
-    size         = 20
+    datastore_id = var.file-system
+    size         = 50
   }
 
   cpu {
@@ -75,7 +75,8 @@ resource "proxmox_virtual_environment_container" "open-webui-container" {
     inline = [
       "apt-get update",
       "apt-get upgrade -y",
-      "docker run -d --restart unless-stopped -p 80:8080 -e OLLAMA_BASE_URL=${var.ollama_host} --env-file /tmp/docker.env -v open-webui:/app/backend/data --name open-webui ghcr.io/open-webui/open-webui:main"
+      #this docker command mounts the certificate store of the host. you might not need this if you are not using self signed certificates
+      "docker run -d --restart unless-stopped -p 80:8080 -e OLLAMA_BASE_URL=${var.ollama_host} --env-file /tmp/docker.env --volume=/etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro -v open-webui:/app/backend/data --name open-webui ghcr.io/open-webui/open-webui:main"
     ]
     connection {
       type  = "ssh"
@@ -88,7 +89,7 @@ resource "proxmox_virtual_environment_container" "open-webui-container" {
 }
 
 resource "proxmox_virtual_environment_container" "searxng-container" {
-  node_name = var.proxmox_node
+  node_name = var.proxmox_nodes.n1
 
   unprivileged = true
   features {
@@ -116,13 +117,13 @@ resource "proxmox_virtual_environment_container" "searxng-container" {
   }
 
   operating_system {
-    template_file_id = "local:vztmpl/debian13-docker-template.tar.gz"
+    template_file_id = "pve-cluster:vztmpl/debian13-docker-template.tar.gz"
     type             = "debian"
   }
 
   disk {
-    datastore_id = "local-lvm"
-    size         = 50
+    datastore_id = var.file-system
+    size         = 30
   }
 
   cpu {
@@ -163,8 +164,7 @@ resource "proxmox_virtual_environment_container" "searxng-container" {
 
 
 resource "proxmox_virtual_environment_container" "n8n-container" {
-  node_name = var.proxmox_node
-
+  node_name    = var.proxmox_nodes.n2
   unprivileged = true
   features {
     nesting = true
@@ -191,12 +191,12 @@ resource "proxmox_virtual_environment_container" "n8n-container" {
   }
 
   operating_system {
-    template_file_id = "local:vztmpl/debian13-docker-template.tar.gz"
+    template_file_id = "pve-cluster:vztmpl/debian13-docker-template.tar.gz"
     type             = "debian"
   }
 
   disk {
-    datastore_id = "local-lvm"
+    datastore_id = var.file-system
     size         = 50
   }
 
