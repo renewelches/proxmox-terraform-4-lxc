@@ -16,7 +16,7 @@ variable "proxmox_tls_insecure" {
 }
 
 variable "proxmox_nodes" {
-  description = "Target Proxmox node names"
+  description = "Target Proxmox node names per container (keys: openwebui, searxng, n8n)"
   type        = map(string)
 }
 
@@ -39,5 +39,10 @@ variable "file-system" {
 }
 variable "ollama_host" {
   description = "The remote URL of ollama. Ollama must run with 'Expose Ollam to the network' setting."
+  type        = string
+}
+
+variable "template_file_id" {
+  description = "The Proxmox template file ID for LXC containers (e.g., pve-cluster:vztmpl/debian13-docker-template.tar.gz)"
   type        = string
 }

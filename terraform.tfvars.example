@@ -6,12 +6,13 @@ proxmox_api_url          = "https://proxmox.lab.home/api2/json"
 proxmox_api_token        = "terraform@pve!provider=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 proxmox_tls_insecure     = false  # Set to true for self-signed certificates
 proxmox_nodes = {
-  n1 = "pve1",
-  n2 = "someothernode",
-  n3 = "myraspberrypi",
+  openwebui = "pve1",
+  searxng   = "pve1",
+  n8n       = "pve2",
 }
 proxmox_host_default_pwd = "changeme"
 ollama_host              = "http://ollama.lab.home:11434"
+template_file_id         = "pve-cluster:vztmpl/debian13-docker-template.tar.gz"
 static_ips = {
   n8n        = "192.168.1.20",
   searxng    = "192.168.1.30",

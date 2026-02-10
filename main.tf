@@ -4,17 +4,8 @@ provider "proxmox" {
   insecure  = var.proxmox_tls_insecure
 }
 
-# Generate the docker.env file from template, injecting the SearXNG URL
-# This allows the SEARXNG_QUERY_URL to be dynamically set based on var.static_ips.searxng
-resource "local_file" "openwebui_env" {
-  content = templatefile("${path.module}/openwebui/docker.env.tpl", {
-    searxng_query_url = "http://${var.static_ips.searxng}/search?q=<query>"
-  })
-  filename = "${path.module}/openwebui/docker.env.rendered"
-}
-
 resource "proxmox_virtual_environment_container" "open-webui-container" {
-  node_name = var.proxmox_nodes.n1
+  node_name = var.proxmox_nodes.openwebui
 
   unprivileged = true
   features {
@@ -30,7 +21,7 @@ resource "proxmox_virtual_environment_container" "open-webui-container" {
 
     ip_config {
       ipv4 {
-        address = "${var.static_ips.open_webui}/32" #fixed IP address
+        address = "${var.static_ips.open_webui}/24" #fixed IP address
         #address = "dhcp"
         gateway = "192.168.86.1"
       }
@@ -42,7 +33,7 @@ resource "proxmox_virtual_environment_container" "open-webui-container" {
   }
 
   operating_system {
-    template_file_id = "pve-cluster:vztmpl/debian13-docker-template.tar.gz"
+    template_file_id = var.template_file_id
     type             = "debian"
   }
 
@@ -89,7 +80,7 @@ resource "proxmox_virtual_environment_container" "open-webui-container" {
 }
 
 resource "proxmox_virtual_environment_container" "searxng-container" {
-  node_name = var.proxmox_nodes.n1
+  node_name = var.proxmox_nodes.searxng
 
   unprivileged = true
   features {
@@ -105,7 +96,7 @@ resource "proxmox_virtual_environment_container" "searxng-container" {
 
     ip_config {
       ipv4 {
-        address = "${var.static_ips.searxng}/32"
+        address = "${var.static_ips.searxng}/24"
         #address = "dhcp"
         gateway = "192.168.86.1"
       }
@@ -117,7 +108,7 @@ resource "proxmox_virtual_environment_container" "searxng-container" {
   }
 
   operating_system {
-    template_file_id = "pve-cluster:vztmpl/debian13-docker-template.tar.gz"
+    template_file_id = var.template_file_id
     type             = "debian"
   }
 
@@ -164,7 +155,7 @@ resource "proxmox_virtual_environment_container" "searxng-container" {
 
 
 resource "proxmox_virtual_environment_container" "n8n-container" {
-  node_name    = var.proxmox_nodes.n2
+  node_name    = var.proxmox_nodes.n8n
   unprivileged = true
   features {
     nesting = true
@@ -179,7 +170,7 @@ resource "proxmox_virtual_environment_container" "n8n-container" {
 
     ip_config {
       ipv4 {
-        address = "${var.static_ips.n8n}/32"
+        address = "${var.static_ips.n8n}/24"
         #address = "dhcp"
         gateway = "192.168.86.1"
       }
@@ -191,7 +182,7 @@ resource "proxmox_virtual_environment_container" "n8n-container" {
   }
 
   operating_system {
-    template_file_id = "pve-cluster:vztmpl/debian13-docker-template.tar.gz"
+    template_file_id = var.template_file_id
     type             = "debian"
   }
 
@@ -224,3 +215,11 @@ resource "proxmox_virtual_environment_container" "n8n-container" {
   }
 }
 
+# Generate the docker.env file from template, injecting the SearXNG URL
+# This allows the SEARXNG_QUERY_URL to be dynamically set based on var.static_ips.searxng
+resource "local_file" "openwebui_env" {
+  content = templatefile("${path.module}/openwebui/docker.env.tpl", {
+    searxng_query_url = "http://${var.static_ips.searxng}/search?q=<query>"
+  })
+  filename = "${path.module}/openwebui/docker.env.rendered"
+}
