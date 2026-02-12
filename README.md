@@ -28,7 +28,7 @@ This configuration creates three Docker-enabled LXC containers:
 
 - Terraform >= 1.0
 - Proxmox VE server with API access
-- **Custom Debian 13 Docker template** (`debian13-docker-template.tar.gz`) available in Proxmox local storage:
+- **Custom Debian 13 Docker template** (e.g., `debian13-docker-template.tar.gz`) available in Proxmox storage:
    -- with **docker** installed and running and
    -- with an **SSH key** for remote provisioning
 - Proxmox user/API token with appropriate permissions (see below)
@@ -78,9 +78,16 @@ Create a `terraform.tfvars` file with your configuration:
 proxmox_api_url          = "https://your-proxmox-server:8006/api2/json"
 proxmox_api_token        = "terraform@pve!terraform-token=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 proxmox_tls_insecure     = true  # Set to false if using valid SSL certificate
-proxmox_node             = "pve"  # Your Proxmox node name
 proxmox_host_default_pwd = "your-secure-root-password"
 ollama_host              = "http://ollama.example.com:11434"
+template_file_id         = "pve-cluster:vztmpl/debian13-docker-template.tar.gz"
+
+# Node assignment per container (allows distributing containers across cluster nodes)
+proxmox_nodes = {
+  openwebui = "pve1"
+  searxng   = "pve1"
+  n8n       = "pve2"
+}
 
 static_ips = {
   n8n        = "192.168.1.20"   # Adjust to your network
