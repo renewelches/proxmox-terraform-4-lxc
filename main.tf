@@ -34,7 +34,7 @@ resource "proxmox_virtual_environment_container" "open-webui-container" {
 
   operating_system {
     template_file_id = var.template_file_id
-    type             = "debian"
+    type             = var.container_os_type
   }
 
   disk {
@@ -109,7 +109,7 @@ resource "proxmox_virtual_environment_container" "searxng-container" {
 
   operating_system {
     template_file_id = var.template_file_id
-    type             = "debian"
+    type             = var.container_os_type
   }
 
   disk {
@@ -183,7 +183,7 @@ resource "proxmox_virtual_environment_container" "n8n-container" {
 
   operating_system {
     template_file_id = var.template_file_id
-    type             = "debian"
+    type             = var.container_os_type
   }
 
   disk {

@@ -42,6 +42,12 @@ variable "ollama_host" {
   type        = string
 }
 
+variable "container_os_type" {
+  description = "The OS type for LXC containers (e.g., debian, ubuntu, centos)"
+  type        = string
+  default     = "debian"
+}
+
 variable "template_file_id" {
   description = "The Proxmox template file ID for LXC containers (e.g., pve-cluster:vztmpl/debian13-docker-template.tar.gz)"
   type        = string
